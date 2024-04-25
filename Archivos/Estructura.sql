@@ -23,7 +23,7 @@ DROP TABLE IF EXISTS `Est_academica`.`edificio` ;
 CREATE TABLE IF NOT EXISTS `Est_academica`.`edificio` (
   `idEdificio` VARCHAR(20) NOT NULL,
   `Niveles` ENUM('1', '2') NOT NULL,
-  `Sanitario` TINYINT UNSIGNED NOT NULL,
+  `Sanitarios` TINYINT UNSIGNED NOT NULL,
   PRIMARY KEY (`idEdificio`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
@@ -55,9 +55,9 @@ DROP TABLE IF EXISTS `Est_academica`.`carrera` ;
 
 CREATE TABLE IF NOT EXISTS `Est_academica`.`carrera` (
   `idCarrera` TINYINT UNSIGNED NOT NULL,
-  `Nombre_Carrera` VARCHAR(65) NOT NULL,
-  `Nombre_Corto_Carrera` VARCHAR(10) NOT NULL,
-  `Status_Carrera` ENUM('ACTIVA', 'LIQUIDACIÓN', 'BAJA') NOT NULL,
+  `Nombre_carrera` VARCHAR(65) NOT NULL,
+  `Nombre_corto_carrera` VARCHAR(10) NOT NULL,
+  `Status_carrera` ENUM('ACTIVA', 'LIQUIDACIÓN', 'BAJA') NOT NULL,
   `Fecha_Alta` DATE NOT NULL,
   `Fecha_Baja` DATE NULL DEFAULT NULL,
   `Fecha_Liquidacion` DATE NULL DEFAULT NULL,
@@ -104,7 +104,6 @@ CREATE TABLE IF NOT EXISTS `Est_academica`.`materia` (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
-##  NOT NULL DEFAULT GENERATED ALWAY AS (HP + HT)
 
 -- -----------------------------------------------------
 -- Table `Est_academica`.`periodo`
@@ -136,7 +135,7 @@ CREATE TABLE IF NOT EXISTS `Est_academica`.`profesor` (
   `Estudios` ENUM('LICENCIATURA', 'MAESTRÍA', 'DOCTORADO') NOT NULL,
   `Titulo` TINYTEXT NOT NULL,
   `Email` VARCHAR(60) NOT NULL,
-  `telefono` VARCHAR(10) NOT NULL,
+  `Telefono` VARCHAR(10) NOT NULL,
   PRIMARY KEY (`idProfesor`),
   UNIQUE INDEX `RFC_UNIQUE` (`RFC` ASC) VISIBLE)
 ENGINE = InnoDB
@@ -175,13 +174,13 @@ CREATE TABLE IF NOT EXISTS `Est_academica`.`grupo` (
   PRIMARY KEY (`idGrupo`),
   INDEX `fk_Grupo_Profesor1_idx` (`Profesor_idProfesor` ASC) VISIBLE,
   INDEX `fk_Grupo_Materia1_idx` (`Materia_Clave_Materia` ASC) VISIBLE,
-  INDEX `fk_Grupo_Aula1_idx` (`Aula_idAula_Viernes` ASC) VISIBLE,
+  INDEX `fk_grupo_aula1_idx` (`Aula_idAula_Viernes` ASC) VISIBLE,
   INDEX `fk_Grupo_Periodo1_idx` (`Periodo_idPeriodo` ASC) VISIBLE,
   INDEX `fk_grupo_aula2_idx` (`aula_idAula_Lunes` ASC) VISIBLE,
   INDEX `fk_grupo_aula3_idx` (`aula_idAula_Martes` ASC) VISIBLE,
   INDEX `fk_grupo_aula4_idx` (`aula_idAulaMiercoles` ASC) VISIBLE,
   INDEX `fk_grupo_aula5_idx` (`aula_idAula_Jueves` ASC) VISIBLE,
-  CONSTRAINT `fk_Grupo_aula0`
+  CONSTRAINT `fk_Grupo_Aula1`
     FOREIGN KEY (`Aula_idAula_Viernes`)
     REFERENCES `Est_academica`.`aula` (`idAula`),
   CONSTRAINT `fk_Grupo_Materia1`
@@ -193,22 +192,22 @@ CREATE TABLE IF NOT EXISTS `Est_academica`.`grupo` (
   CONSTRAINT `fk_Grupo_Profesor1`
     FOREIGN KEY (`Profesor_idProfesor`)
     REFERENCES `Est_academica`.`profesor` (`idProfesor`),
-  CONSTRAINT `fk_grupo_aula1`
+  CONSTRAINT `fk_grupo_aula2`
     FOREIGN KEY (`aula_idAula_Lunes`)
     REFERENCES `Est_academica`.`aula` (`idAula`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `fk_grupo_aula2`
+  CONSTRAINT `fk_grupo_aula3`
     FOREIGN KEY (`aula_idAula_Martes`)
     REFERENCES `Est_academica`.`aula` (`idAula`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `fk_grupo_aula3`
+  CONSTRAINT `fk_grupo_aula4`
     FOREIGN KEY (`aula_idAulaMiercoles`)
     REFERENCES `Est_academica`.`aula` (`idAula`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `fk_grupo_aula4`
+  CONSTRAINT `fk_grupo_aula5`
     FOREIGN KEY (`aula_idAula_Jueves`)
     REFERENCES `Est_academica`.`aula` (`idAula`)
     ON DELETE NO ACTION
@@ -296,6 +295,280 @@ CREATE TABLE IF NOT EXISTS `Est_academica`.`reticula_has_materia` (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
+
+-- -----------------------------------------------------
+-- Table `Est_academica`.`usuario`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `Est_academica`.`usuario` ;
+
+CREATE TABLE IF NOT EXISTS `Est_academica`.`usuario` (
+  `idUsuario` VARCHAR(8) NOT NULL,
+  `Password` VARCHAR(45) NOT NULL,
+  `Estatus` ENUM('ACTIVO', 'INACTIVO') NOT NULL,
+  `Image_Direct` VARCHAR(60) NULL,
+  `profesor_idProfesor` SMALLINT UNSIGNED NOT NULL,
+  PRIMARY KEY (`idUsuario`),
+  INDEX `fk_Usuario_profesor1_idx` (`profesor_idProfesor` ASC) VISIBLE,
+  CONSTRAINT `fk_Usuario_profesor1`
+    FOREIGN KEY (`profesor_idProfesor`)
+    REFERENCES `Est_academica`.`profesor` (`idProfesor`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+USE `Est_academica` ;
+
+-- -----------------------------------------------------
+-- procedure Alta_Grupo
+-- -----------------------------------------------------
+
+USE `Est_academica`;
+DROP procedure IF EXISTS `Est_academica`.`Alta_Grupo`;
+
+DELIMITER $$
+USE `Est_academica`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `Alta_Grupo`(P_Id_Profesor smallint,P_Materia VARCHAR (8))
+BEGIN
+	IF Profe_Activo(P_Id_Profesor)=1
+    THEN IF Materia_Activa(P_Materia)
+			THEN SELECT "Profesor y materia activa";
+			ELSE SELECT "ERROR 1002 MATERIA NO EXISTENTE" AS ERROR;
+        END IF;
+		
+    ELSE SELECT "ERROR 1001 PROFESOR INACTIVO" AS ERROR;
+    END IF;
+END$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure Alta_Grupo2
+-- -----------------------------------------------------
+
+USE `Est_academica`;
+DROP procedure IF EXISTS `Est_academica`.`Alta_Grupo2`;
+
+DELIMITER $$
+USE `Est_academica`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `Alta_Grupo2`(P_Idprofesor smallint)
+BEGIN
+	IF (Maestro_Existe(P_IdProfesor))
+    THEN IF (Maestro_Activo(P_IdProfesor)) 
+			THEN SELECT ("EL MAESTRO EXISTE Y ESTA ACTIVO");
+            ELSE SELECT ("ERROR 1002 EL MAESTRO EXISTE PERO NO ESTA ACTIVO") AS ERROR;
+            END IF;
+    ELSE SELECT ("ERROR 1001 EL MAESTRO NO EXISTE") AS ERROR;
+    END IF;
+END$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure Alta_Profesor
+-- -----------------------------------------------------
+
+USE `Est_academica`;
+DROP procedure IF EXISTS `Est_academica`.`Alta_Profesor`;
+
+DELIMITER $$
+USE `Est_academica`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `Alta_Profesor`(IN id smallint, N Varchar (25),P Varchar(15),m varchar(15))
+BEGIN
+INSERT INTO profesor VALUES(id,TRIM(UPPER(N)),TRIM(UPPER(P)),TRIM(UPPER(M)),"jsjsjsjs",'ACTIVO','M','LICENCIATURA','DOCTOR EN MATEMATICAS','KJKJJL','898989');
+SELECT 'REGISTRO INSERTADO CON EXITO';
+
+END$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- function Grupo_Abierto
+-- -----------------------------------------------------
+
+USE `Est_academica`;
+DROP function IF EXISTS `Est_academica`.`Grupo_Abierto`;
+
+DELIMITER $$
+USE `Est_academica`$$
+CREATE DEFINER=`root`@`localhost` FUNCTION `Grupo_Abierto`(X int) RETURNS varchar(20) CHARSET utf8
+    DETERMINISTIC
+BEGIN
+	IF (SELECT Status_grupo FROM GRUPO WHERE idGrupo = X) = 1
+		THEN RETURN 'ABIERTO';
+		ELSE RETURN 'CERRADO';
+	END IF;
+END$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- function Horas_Profe
+-- -----------------------------------------------------
+
+USE `Est_academica`;
+DROP function IF EXISTS `Est_academica`.`Horas_Profe`;
+
+DELIMITER $$
+USE `Est_academica`$$
+CREATE DEFINER=`root`@`localhost` FUNCTION `Horas_Profe`( F_idProfesor Smallint) RETURNS tinyint
+    DETERMINISTIC
+BEGIN
+	DECLARE Valor Varchar(2);
+    
+	SELECT SUBSTR(PLAZA_IDPLAZA,2,2) FROM profesor_has_plaza 
+    WHERE PROFESOR_IDPROFESOR =F_idprofesor INTO Valor;
+		CASE Valor 
+        WHEN "38" THEN RETURN 22;
+        WHEN "37" THEN RETURN ((SELECT SUM(Horas_Plaza) FROM Profesor_has_plaza
+					WHERE PROFESOR_IDPROFESOR =F_idprofesor)-12);
+						
+        WHEN "36" THEN RETURN ((SELECT SUM(Horas_Plaza) FROM Profesor_has_plaza
+					WHERE PROFESOR_IDPROFESOR =F_idprofesor)-6);
+        ELSE RETURN (SELECT SUM(Horas_Plaza) FROM Profesor_has_plaza
+					WHERE PROFESOR_IDPROFESOR =F_idprofesor);
+		END CASE;
+	END$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- function Maestro_Activo
+-- -----------------------------------------------------
+
+USE `Est_academica`;
+DROP function IF EXISTS `Est_academica`.`Maestro_Activo`;
+
+DELIMITER $$
+USE `Est_academica`$$
+CREATE DEFINER=`root`@`localhost` FUNCTION `Maestro_Activo`(F_IdProfesor SMALLINT) RETURNS int
+    DETERMINISTIC
+IF (SELECT status FROM profesor WHERE idProfesor=F_IdProfesor)="ACTIVO"
+    THEN RETURN 1;
+    ELSE RETURN 0;
+    END IF$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- function Maestro_Existe
+-- -----------------------------------------------------
+
+USE `Est_academica`;
+DROP function IF EXISTS `Est_academica`.`Maestro_Existe`;
+
+DELIMITER $$
+USE `Est_academica`$$
+CREATE DEFINER=`root`@`localhost` FUNCTION `Maestro_Existe`(F_IdProfesor SMALLINT) RETURNS int
+    DETERMINISTIC
+IF (SELECT COUNT(*) FROM profesor WHERE idProfesor=F_IdProfesor)
+    THEN RETURN 1;
+    ELSE RETURN 0;
+    END IF$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- function Materia_Activa
+-- -----------------------------------------------------
+
+USE `Est_academica`;
+DROP function IF EXISTS `Est_academica`.`Materia_Activa`;
+
+DELIMITER $$
+USE `Est_academica`$$
+CREATE DEFINER=`root`@`localhost` FUNCTION `Materia_Activa`(F_Materia varchar(8)) RETURNS tinyint(1)
+    DETERMINISTIC
+BEGIN
+	RETURN (SELECT COUNT(*) FROM materia WHERE clave_materia=F_materia);
+ END$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- function Profe_Activo
+-- -----------------------------------------------------
+
+USE `Est_academica`;
+DROP function IF EXISTS `Est_academica`.`Profe_Activo`;
+
+DELIMITER $$
+USE `Est_academica`$$
+CREATE DEFINER=`root`@`localhost` FUNCTION `Profe_Activo`(F_id_Profesor smallint) RETURNS tinyint(1)
+    DETERMINISTIC
+BEGIN
+	IF (SELECT STATUS FROM profesor WHERE idProfesor=F_Id_Profesor)="ACTIVO"
+    THEN RETURN 1;
+    ELSE RETURN 0;
+    END IF;
+END$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- function edad
+-- -----------------------------------------------------
+
+USE `Est_academica`;
+DROP function IF EXISTS `Est_academica`.`edad`;
+
+DELIMITER $$
+USE `Est_academica`$$
+CREATE DEFINER=`root`@`localhost` FUNCTION `edad`(Y VARCHAR (13)) RETURNS int
+    DETERMINISTIC
+BEGIN
+RETURN TIMESTAMPDIFF(YEAR,(CONCAT('19',SUBSTR(Y,5,2),'/',SUBSTR(Y,7,2),'/',SUBSTR(Y,9,2))),CURDATE());
+
+END$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- function holaMundo
+-- -----------------------------------------------------
+
+USE `Est_academica`;
+DROP function IF EXISTS `Est_academica`.`holaMundo`;
+
+DELIMITER $$
+USE `Est_academica`$$
+CREATE DEFINER=`root`@`localhost` FUNCTION `holaMundo`() RETURNS varchar(20) CHARSET utf8
+    DETERMINISTIC
+BEGIN
+    RETURN 'Hola Mundo';
+END$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure inscripcion
+-- -----------------------------------------------------
+
+USE `Est_academica`;
+DROP procedure IF EXISTS `Est_academica`.`inscripcion`;
+
+DELIMITER $$
+USE `Est_academica`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `inscripcion`(in g int, nc varchar(10))
+    DETERMINISTIC
+BEGIN
+IF EXISTS (SELECT idGrupo FROM grupo WHERE idGrupo = g)
+	THEN 
+		IF (SELECT status_Grupo FROM grupo WHERE idGrupo = g)
+			THEN 
+				UPDATE grupo SET inscritos = inscritos + 1 WHERE idGrupo = g;
+                IF (SELECT inscritos FROM grupo WHERE idGrupo = g) = (SELECT Limite FROM grupo WHERE idGrupo = g)
+					THEN UPDATE grupo SET Status_Grupo = 0 WHERE idGrupo = g;
+                END IF;
+                INSERT INTO inscripcion VALUES (DEFAULT,nc,now(),g);
+                SELECT 'ALUMNO REGISTRADO CON EXITO' MENSAJE;
+            ELSE SELECT 'EL GRUPO EXISTE PERO NO HAY CUPO' ERROR;
+		END IF;
+	ELSE SELECT 'EL GRUPO NO EXISTE' ERROR;
+END IF ;
+
+END$$
+
+DELIMITER ;
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
