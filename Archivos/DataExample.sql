@@ -24,3 +24,4 @@ INSERT INTO usuario (idUsuario, Password, Estatus, Image_Direct, profesor_idProf
 INSERT INTO reticula (idReticula, Plan, Estatus_Reticula, Fecha_autorizacion, Carrera_idCarrera) VALUES (2, 'Plan 2024', 'ACTIVA', '2024-01-01', 1);
 INSERT INTO reticula_has_materia (Reticula_idReticula, Materia_Clave_Materia, Clave_interna_Materia) VALUES (2, 'FIS2345', 'FIS2');
 
+

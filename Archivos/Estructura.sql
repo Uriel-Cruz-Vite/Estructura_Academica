@@ -567,9 +567,30 @@ IF EXISTS (SELECT idGrupo FROM grupo WHERE idGrupo = g)
 END IF ;
 
 END$$
-
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_loggin`(
+    IN idUser VARCHAR(45), 
+    IN pass VARCHAR(8)
+)
+BEGIN
+    IF EXISTS (SELECT idUsuario FROM usuario WHERE idUsuario = idUser) THEN
+        IF (SELECT Password FROM usuario WHERE idUsuario = idUser) = pass THEN
+            IF (SELECT Estatus FROM usuario WHERE idUsuario = idUser) = 'ACTIVO' THEN
+                SELECT 'true' as 'respuesta', Image_Direct FROM usuario WHERE idUsuario = idUser;
+            ELSE
+                SELECT 'EL USUARIO ESTÁ INACTIVO' AS ERROR;
+            END IF;
+		ELSE
+			SELECT 'CONTRASEÑA INCORRECTA' AS ERROR;
+		END IF;
+	ELSE
+		SELECT 'USUARIO INEXISTENTE' AS ERROR;
+	END IF;
+END$$
 DELIMITER ;
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+
