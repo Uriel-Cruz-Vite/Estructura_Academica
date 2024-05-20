@@ -1,18 +1,37 @@
 <?php
 require_once '../connect.php';
 
-try {
-    $conn = get_Connect();
-    // Consulta SQL
-    $sql = "CALL sp_loggin('usuario2','12345');";
-    $data = $conn->query($sql);
+if (isset($_GET["user"])) {
+    if (isset($_GET["password"])) {
 
-    // Procesar los resultados
-    while ($row = $data->fetch()) {
-        echo $row['estatus'];
+        $usu = $_GET['user'];
+        $pass = $_GET['password'];
+
+        // Consulta SQL
+        $sql = "call sp_loggin('$usu', '$pass')";
+
+        try {
+            $conn = get_Connect();
+
+            $stmt = $conn->prepare($sql); // Preparar la consulta
+            $stmt->execute(); // Ejecutar la consulta
+
+            // Obtener resultados
+            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $json = json_encode($data);
+            echo $json;
+        } catch (PDOException $e) {
+            $error = [
+                'error' => "Connection Error Loggin",
+                'message' => $e->getMessage()
+            ];
+            echo json_encode($error);
+        } finally {
+            $conn = null;
+        }
+    } else{
+        echo "Contraseña Faltante";
     }
-} catch (PDOException $e) {
-    echo "Connection Error: " . $e->getMessage();
-} finally {
-    $conn = null;
+} else{
+    echo "Usuario Faltante";
 }
