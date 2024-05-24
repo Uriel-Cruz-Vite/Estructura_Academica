@@ -1,8 +1,18 @@
 <?php
 require_once '../connect.php';
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
 // Consulta SQL
-$sql = "call sp_getCarrera();";
+if(isset($_GET["name"])){
+    $aux = $_GET["name"];
+    $sql = "call sp_getcarreraInd('$aux');";
+    
+} else {
+    $sql = "call sp_getCarrera();";
+}
+
 
 try {
     $conn = get_Connect();
