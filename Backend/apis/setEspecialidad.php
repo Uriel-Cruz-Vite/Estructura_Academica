@@ -1,7 +1,7 @@
 <?php
 require_once '../connect.php';
-// setEspecialidad.php?id=3&nombre=Matematicas&nc=mate&estatus=ACTIVA&carrera=1
 
+// setEspecialidad.php?id=3&nombre=Matematicas&nc=mate&estatus=ACTIVA&carrera=1
 if (isset($_GET["id"])) {
     if (isset($_GET["nombre"])) {
         if (isset($_GET["nc"])) {
@@ -37,17 +37,37 @@ if (isset($_GET["id"])) {
                         $conn = null;
                     }
                 } else {
-                    echo "No se ha enviado el id de la carrera";
+                    $error = [
+                        'error' => "No se ha enviado el id de la carrera",
+                        'message' => $e->getMessage()
+                    ];
+                    echo json_encode($error);
                 }
             } else {
-                echo "Edificio faltante";
+                $error = [
+                    'error' => "Edificio faltante",
+                    'message' => $e->getMessage()
+                ];
+                echo json_encode($error);
             }
         } else {
-            echo "Campo proyector faltante";
+            $error = [
+                'error' => "Campo proyector faltante",
+                'message' => $e->getMessage()
+            ];
+            echo json_encode($error);
         }
     } else {
-        echo "Capacidad faltante";
+        $error = [
+            'error' => "Capacidad faltante",
+            'message' => $e->getMessage()
+        ];
+        echo json_encode($error);
     }
 } else {
-    echo "id Faltante";
+    $error = [
+        'error' => "id Faltante",
+        'message' => $e->getMessage()
+    ];
+    echo json_encode($error);
 }

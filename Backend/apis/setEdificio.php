@@ -1,7 +1,7 @@
 <?php
 require_once '../connect.php';
 
-
+// http://localhost:8000/setEdificio.php?id=Edificio5&nivel=1&sanitario=5
 if (isset($_GET["id"])) {
     if (isset($_GET["nivel"])) {
         if (isset($_GET["sanitario"])) {
@@ -33,11 +33,23 @@ if (isset($_GET["id"])) {
                 $conn = null;
             }
         } else {
-            echo "No. Sanitarios faltante";
+            $error = [
+                'error' => "No. Sanitarios faltante",
+                'message' => $e->getMessage()
+            ];
+            echo json_encode($error);
         }
     } else {
-        echo "Niveles faltantes";
+        $error = [
+            'error' => "Niveles faltantes",
+            'message' => $e->getMessage()
+        ];
+        echo json_encode($error);
     }
 } else {
-    echo "id Faltante";
+    $error = [
+        'error' => "Id Faltante",
+        'message' => $e->getMessage()
+    ];
+    echo json_encode($error);
 }

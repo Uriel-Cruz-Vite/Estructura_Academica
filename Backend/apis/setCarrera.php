@@ -34,14 +34,30 @@ if (isset($_GET["id"])) {
                     $conn = null;
                 }
             } else {
-                echo "Edificio faltante";
+                $error = [
+                    'error' => "Edificio faltante",
+                    'message' => $e->getMessage()
+                ];
+                echo json_encode($error);
             }
         } else {
-            echo "Campo proyector faltante";
+            $error = [
+                'error' => "Campo proyector faltante",
+                'message' => $e->getMessage()
+            ];
+            echo json_encode($error);
         }
     } else {
-        echo "Capacidad faltante";
+        $error = [
+            'error' => "Campo Capacidad faltante",
+            'message' => $e->getMessage()
+        ];
+        echo json_encode($error);
     }
 } else {
-    echo "id Faltante";
+    $error = [
+        'error' => "id Faltante",
+        'message' => $e->getMessage()
+    ];
+    echo json_encode($error);
 }

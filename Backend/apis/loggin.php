@@ -1,11 +1,16 @@
 <?php
 require_once '../connect.php';
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
-if (isset($_GET["user"])) {
-    if (isset($_GET["password"])) {
+// http://localhost:8000/loggin.php?user=usuario2&password=123456
 
-        $usu = $_GET['user'];
-        $pass = $_GET['password'];
+if (isset($_POST["user"])) {
+    if (isset($_POST["password"])) {
+
+        $usu = $_POST['user'];
+        $pass = $_POST['password'];
 
         // Consulta SQL
         $sql = "call sp_loggin('$usu', '$pass')";
@@ -30,8 +35,16 @@ if (isset($_GET["user"])) {
             $conn = null;
         }
     } else{
-        echo "Contraseña Faltante";
+        $error = [
+            'error' => "400",
+            'message' => "Contraseña Faltante"
+        ];
+        echo json_encode($error);
     }
 } else{
-    echo "Usuario Faltante";
+    $error = [
+        'error' => "400",
+        'message' => "Usuario Faltante"
+    ];
+    echo json_encode($error);
 }
