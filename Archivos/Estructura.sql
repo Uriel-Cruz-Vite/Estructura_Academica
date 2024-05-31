@@ -39,7 +39,7 @@ CREATE TABLE `aula` (
 
 LOCK TABLES `aula` WRITE;
 /*!40000 ALTER TABLE `aula` DISABLE KEYS */;
-INSERT INTO `aula` VALUES ('Aula101',30,'SI','Edificio1'),('Aula3',25,'SI','Edificio1');
+INSERT INTO `aula` VALUES ('Aula101',30,'SI','Edificio5'),('Aula3',15,'NO','Edificio5');
 /*!40000 ALTER TABLE `aula` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -68,7 +68,7 @@ CREATE TABLE `carrera` (
 
 LOCK TABLES `carrera` WRITE;
 /*!40000 ALTER TABLE `carrera` DISABLE KEYS */;
-INSERT INTO `carrera` VALUES (1,'Ingeniería en Sistemas Computacionales','ISC','ACTIVA','2022-01-01',NULL,NULL),(3,'Matematicas','mate','ACTIVA','2024-05-20',NULL,NULL);
+INSERT INTO `carrera` VALUES (1,'Ingeniería en Sistemas Computacionales','ISC','ACTIVA','2022-01-01',NULL,NULL),(3,'Super materia','mate','LIQUIDACIÓN','2024-05-24','2024-05-24','2024-05-24');
 /*!40000 ALTER TABLE `carrera` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -93,7 +93,7 @@ CREATE TABLE `edificio` (
 
 LOCK TABLES `edificio` WRITE;
 /*!40000 ALTER TABLE `edificio` DISABLE KEYS */;
-INSERT INTO `edificio` VALUES ('Edificio1','2',4),('Edificio2','1',8),('Edificio5','1',5),('Edificio6','1',5);
+INSERT INTO `edificio` VALUES ('Edificio1','2',8),('Edificio2','1',8),('Edificio5','1',5),('Edificio6','1',5);
 /*!40000 ALTER TABLE `edificio` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -122,7 +122,7 @@ CREATE TABLE `especialidad` (
 
 LOCK TABLES `especialidad` WRITE;
 /*!40000 ALTER TABLE `especialidad` DISABLE KEYS */;
-INSERT INTO `especialidad` VALUES (3,'Matematicas','mate','ACTIVA',1);
+INSERT INTO `especialidad` VALUES (3,'Otro','ot','ACTIVA',1);
 /*!40000 ALTER TABLE `especialidad` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1175,6 +1175,188 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_updAula` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_updAula`(
+    IN idAnt VARCHAR(7),
+    IN id VARCHAR(7),
+    IN cap int,
+    IN proy ENUM('SI', 'NO'),
+    IN edificio varchar(20)
+)
+BEGIN
+    if exists (select idAula from aula where idAula = idAnt) then
+		if not exists (select idAula from aula where idAula = id) then
+			UPDATE aula 
+			SET 
+				idAula = COALESCE(id, idAula),
+				Capacidad = COALESCE(cap, Capacidad),
+				Proyector = COALESCE(proy, Proyector),
+				Edificio_idEdificio = COALESCE(edificio, Edificio_idEdificio)
+			WHERE idAula = idAnt;
+        else
+			select 'ID del aula ya existente' as ERROR;
+        end if;
+	else
+		select 'Aula Inexistente' as ERROR;
+    end if;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_updCarrera` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_updCarrera`(
+    IN id int,
+    IN nom VARCHAR(65),
+    IN nc VARCHAR(10),
+    IN est enum('ACTIVA','LIQUIDACIÓN','BAJA')
+)
+BEGIN
+
+		if exists (select idCarrera from carrera where idCarrera = id) then
+			if (est = 'ACTIVA') THEN
+				UPDATE carrera 
+				SET 
+					Nombre_carrera = COALESCE(nom, Nombre_carrera),
+					Nombre_corto_carrera = COALESCE(nc, Nombre_corto_carrera),
+					Status_carrera = COALESCE(est, Status_carrera),
+					Fecha_Alta = curdate()
+				WHERE idCarrera = id;
+				ELSEIF (est = 'BAJA') THEN
+					UPDATE carrera 
+					SET 
+						Nombre_carrera = COALESCE(nom, Nombre_carrera),
+						Nombre_corto_carrera = COALESCE(nc, Nombre_corto_carrera),
+						Status_carrera = COALESCE(est, Status_carrera),
+						Fecha_Baja = curdate()
+					WHERE idCarrera = id;
+				ELSEIF (est = 'LIQUIDACION') THEN
+					UPDATE carrera 
+					SET 
+						Nombre_carrera = COALESCE(nom, Nombre_carrera),
+						Nombre_corto_carrera = COALESCE(nc, Nombre_corto_carrera),
+						Status_carrera = COALESCE(est, Status_carrera),
+						Fecha_Liquidacion = curdate()
+					WHERE idCarrera = id;
+			END IF;
+		else
+			select 'Carrera Inexistente' as ERROR;
+        end if;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_updEdificio` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_updEdificio`(
+    IN idAnt VARCHAR(20),
+    IN id VARCHAR(20),
+    IN niv ENUM('1', '2'),
+    IN san INT
+)
+BEGIN
+    if exists (select idEdificio from edificio where idEdificio = idAnt) then
+		if not exists (select idEdificio from edificio where idEdificio = id) then
+			UPDATE aula 
+			SET Edificio_idEdificio = COALESCE(id, Edificio_idEdificio) 
+			WHERE Edificio_idEdificio = idAnt;
+
+			UPDATE edificio 
+			SET 
+				idEdificio = COALESCE(id, idEdificio), 
+				Niveles = COALESCE(niv, Niveles), 
+				Sanitarios = COALESCE(san, Sanitarios) 
+			WHERE idEdificio = idAnt;
+            select CONCAT('Se ha actualizado el registro: ', idAnt) as respuesta;
+		else
+			select 'Id ya existente' as ERROR;
+        end if;
+	else
+		select 'Edificio Inexistente' as ERROR;
+    end if;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_updEspecialidad` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_updEspecialidad`(
+    IN id int,
+    IN nom VARCHAR(65),
+    IN nc VARCHAR(10),
+    IN est enum('ACTIVA','LIQUIDACIÓN','BAJA'),
+    IN carr int
+)
+BEGIN
+		if exists(select idEspecialidad from especialidad where idEspecialidad = id) then
+			IF carr IS NOT NULL THEN
+				if exists(select idCarrera from carrera where idCarrera = carr) then
+					UPDATE especialidad 
+					SET 
+						Nombre_especialidad = COALESCE(nom, Nombre_especialidad),
+						Nombre_Corto_especialidad = COALESCE(nc, Nombre_Corto_especialidad),
+						Status_Especialidad = COALESCE(est, Status_Especialidad),
+						Carrera_idCarrera = carr
+					WHERE idEspecialidad = id;
+				else
+					select 'Carrera Inexistente' as ERROR;
+                end if;
+			else
+				UPDATE especialidad 
+				SET 
+					Nombre_especialidad = COALESCE(nom, Nombre_especialidad),
+					Nombre_Corto_especialidad = COALESCE(nc, Nombre_Corto_especialidad),
+					Status_Especialidad = COALESCE(est, Status_Especialidad)
+				WHERE idEspecialidad = id;
+			end if;
+		else
+			select 'Especialidad inexistente' as ERROR;
+		END IF;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -1185,4 +1367,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-05-24 11:20:06
+-- Dump completed on 2024-05-31 13:39:38
