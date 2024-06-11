@@ -1,17 +1,19 @@
 <?php
 require_once '../connect.php';
 
-// http://localhost:8000/setEdificio.php?id=Edificio5&nivel=1&sanitario=5
+//http://localhost:8000/setPeriodo.php?id=5&ciclo=2024-2025&estado=PROXIMO
+
 if (isset($_GET["id"])) {
-    if (isset($_GET["nivel"])) {
-        if (isset($_GET["sanitario"])) {
+    if (isset($_GET["ciclo"])) {
+        if (isset($_GET["estado"])) {
 
             $id = $_GET['id'];
-            $niv = $_GET['nivel'];
-            $san = $_GET['sanitario'];
+            $cic = $_GET['ciclo'];
+            $stat = $_GET['estado'];
+
 
             // Consulta SQL
-            $sql = "call sp_setEdificio('$id','$niv',$san);";
+            $sql = "call sp_setPeriodo($id,'$cic','$stat');";
 
             try {
                 $conn = get_Connect();
@@ -25,7 +27,7 @@ if (isset($_GET["id"])) {
                 echo $json;
             } catch (PDOException $e) {
                 $error = [
-                    'error' => "Connection Error SetEdificio",
+                    'error' => "Connection Error Set: Periodo",
                     'message' => $e->getMessage()
                 ];
                 echo json_encode($error);
@@ -35,21 +37,21 @@ if (isset($_GET["id"])) {
         } else {
             $error = [
                 'error' => "400",
-                'message' => "Campo Sanitarios faltante"
+                'message' => "Campo estado faltante"
             ];
             echo json_encode($error);
         }
     } else {
         $error = [
-            'error' => "",
-            'message' => "Campo Niveles Faltante"
+            'error' => "400",
+            'message' => "Campo ciclo faltante"
         ];
         echo json_encode($error);
     }
 } else {
     $error = [
         'error' => "400",
-        'message' => "Id FaltanteId Faltante"
+        'message' => "id Faltante"
     ];
     echo json_encode($error);
 }

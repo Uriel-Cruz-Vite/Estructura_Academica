@@ -43,22 +43,22 @@ if (isset($_GET["id"])) {
             }
         } else {
             $error = [
-                'error' => "Campo proyector faltante",
-                'message' => $e->getMessage()
+                'error' => "400",
+                'message' => "Campo proyector faltante"            
             ];
             echo json_encode($error);
         }
     } else {
         $error = [
-            'error' => "Capacidad faltante",
-            'message' => $e->getMessage()
+            'error' => "400",
+            'message' => "Campo Capacidad faltante"
         ];
         echo json_encode($error);
     }
 } else {
     $error = [
-        'error' => "id Faltante",
-        'message' => $e->getMessage()
+        'error' => "400",
+        'message' => "Campo id Faltante"
     ];
     echo json_encode($error);
 }

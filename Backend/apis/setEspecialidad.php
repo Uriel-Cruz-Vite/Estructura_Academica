@@ -1,17 +1,17 @@
 <?php
 require_once '../connect.php';
 
-// setEspecialidad.php?id=3&nombre=Matematicas&nc=mate&estatus=ACTIVA&carrera=1
+// setEspecialidad.php?id=3&nombre=Matematicas&nc=mate&estado=ACTIVA&carrera=1
 if (isset($_GET["id"])) {
     if (isset($_GET["nombre"])) {
         if (isset($_GET["nc"])) {
-            if (isset($_GET["estatus"])) {
+            if (isset($_GET["estado"])) {
                 if (isset($_GET["carrera"])) {
 
                     $id = $_GET['id'];
                     $nom = $_GET['nombre'];
                     $nc = $_GET['nc'];
-                    $est = $_GET['estatus'];
+                    $est = $_GET['estado'];
                     $idCar = $_GET['carrera'];
 
                     // Consulta SQL
@@ -38,36 +38,36 @@ if (isset($_GET["id"])) {
                     }
                 } else {
                     $error = [
-                        'error' => "No se ha enviado el id de la carrera",
-                        'message' => $e->getMessage()
+                        'error' => "400",
+                        'message' => "No se ha enviado el id de la carrera"
                     ];
                     echo json_encode($error);
                 }
             } else {
                 $error = [
-                    'error' => "Edificio faltante",
-                    'message' => $e->getMessage()
+                    'error' => "400",
+                    'message' => "Campo estado faltante"
                 ];
                 echo json_encode($error);
             }
         } else {
             $error = [
-                'error' => "Campo proyector faltante",
-                'message' => $e->getMessage()
+                'error' => "",
+                'message' => "Campo nc faltante"
             ];
             echo json_encode($error);
         }
     } else {
         $error = [
-            'error' => "Capacidad faltante",
-            'message' => $e->getMessage()
+            'error' => "400",
+            'message' => "Campo nombre faltante"
         ];
         echo json_encode($error);
     }
 } else {
     $error = [
-        'error' => "id Faltante",
-        'message' => $e->getMessage()
+        'error' => "400",
+        'message' => "Campo id Faltante"
     ];
     echo json_encode($error);
 }

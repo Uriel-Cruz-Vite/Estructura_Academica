@@ -1,18 +1,20 @@
 <?php
 require_once '../connect.php';
-// setCarrera.php?id=3&nombre=Matematicas&nc=mate&estatus=ACTIVA
-if (isset($_GET["id"])) {
-    if (isset($_GET["nombre"])) {
-        if (isset($_GET["nc"])) {
-            if (isset($_GET["estatus"])) {
 
+//http://localhost:8000/setReticula.php?id=10&planta=1&estado=ACTIVA&carrera=1
+
+if (isset($_GET["id"])) {
+    if (isset($_GET["planta"])) {
+        if (isset($_GET["estado"])) {
+
+            if (isset($_GET["carrera"])) {
                 $id = $_GET['id'];
-                $nom = $_GET['nombre'];
-                $nc = $_GET['nc'];
-                $est = $_GET['estatus'];
+                $cic = $_GET['planta'];
+                $stat = $_GET['estado'];
+                $carr = $_GET["carrera"];
 
                 // Consulta SQL
-                $sql = "call sp_setCarrera($id,'$nom','$nc','$est');";
+                $sql = "call sp_setReticula($id,'$cic','$stat',$carr);";
 
                 try {
                     $conn = get_Connect();
@@ -26,7 +28,7 @@ if (isset($_GET["id"])) {
                     echo $json;
                 } catch (PDOException $e) {
                     $error = [
-                        'error' => "Connection Error SetCarrera",
+                        'error' => "Connection Error Set: Reticula",
                         'message' => $e->getMessage()
                     ];
                     echo json_encode($error);
@@ -36,21 +38,21 @@ if (isset($_GET["id"])) {
             } else {
                 $error = [
                     'error' => "400",
-                    'message' => "Campo Edificio faltante"
+                    'message' => "Campo carrera faltante"
                 ];
                 echo json_encode($error);
             }
         } else {
             $error = [
                 'error' => "400",
-                'message' => "Campo proyector faltante"
+                'message' => "Campo estatus faltante"
             ];
             echo json_encode($error);
         }
     } else {
         $error = [
             'error' => "400",
-            'message' => "Campo Capacidad faltante"
+            'message' => "Campo planta faltante"
         ];
         echo json_encode($error);
     }
