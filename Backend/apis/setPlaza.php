@@ -1,19 +1,16 @@
 <?php
 require_once '../connect.php';
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
-// http://localhost:8000/loggin.php?user=usuario2&password=123456
+//http://localhost:8000/setPlaza.php?id=PLZ08&descripcion=Este es un comentario
 
-if (isset($_POST["user"])) {
-    if (isset($_POST["password"])) {
+if (isset($_GET["id"])) {
+    if (isset($_GET["descripcion"])) {
 
-        $usu = $_POST['user'];
-        $pass = $_POST['password'];
+        $id = $_GET['id'];
+        $des = $_GET['descripcion'];
 
         // Consulta SQL
-        $sql = "call sp_loggin('$usu', '$pass')";
+        $sql = "call sp_setPlaza('$id','$des');";
 
         try {
             $conn = get_Connect();
@@ -27,24 +24,24 @@ if (isset($_POST["user"])) {
             echo $json;
         } catch (PDOException $e) {
             $error = [
-                'error' => "Connection Error Loggin",
+                'error' => "Connection Error Set: Plaza",
                 'message' => $e->getMessage()
             ];
             echo json_encode($error);
         } finally {
             $conn = null;
         }
-    } else{
+    } else {
         $error = [
             'error' => "400",
-            'message' => "Campo Contraseña Faltante"
+            'message' => "Campo descripcion faltante"
         ];
         echo json_encode($error);
     }
-} else{
+} else {
     $error = [
         'error' => "400",
-        'message' => "Campo Usuario Faltante"
+        'message' => "Campo id Faltante"
     ];
     echo json_encode($error);
 }
