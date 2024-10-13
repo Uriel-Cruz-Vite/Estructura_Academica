@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sidebar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="sidebar">
+    <div class="sidebar-top">
+      <a href="#" class="logo__wrapper">
+        <img src="assets/logo_itp.png" alt="Logo" class="logo">
+        <h1 class="hide">Menú</h1>
+      </a>
+      <div class="expand-btn">
+        <img src="assets/chevron.svg" alt="Chevron">
+      </div>
+    </div>
+    <div class="sidebar-links">
+      <ul>
+        <li>
+          <a href="#dashboard" title="Dashboard" class="tooltip">
+            <img src="assets/dashboard.svg" alt="Dashboard">
+            <span class="link hide">Edificio</span>
+            <span class="tooltip__content">Edificio</span>
+          </a>
+        </li>
+        <li>
+          <a href="#project" title="Project" class="tooltip">
+            <img src="assets/analytics.svg" alt="Analytics">
+            <span class="link hide">Aulas</span>
+            <span class="tooltip__content">Aulas</span>
+          </a>
+        </li>
+        <li>
+          <a href="#performance" title="Performance" class="tooltip">
+            <img src="assets/performance.svg" alt="Performance">
+            <span class="link hide">Carrera</span>
+            <span class="tooltip__content">Carrera</span>
+          </a>
+        </li>
+        <li>
+          <a href="#funds" title="Funds" class="tooltip">
+            <img src="assets/funds.svg" alt="Funds">
+            <span class="link hide">Grupo</span>
+            <span class="tooltip__content">Grupo</span>
+          </a>
+        </li>
+        <li>
+          <a href="#funds" title="Funds" class="tooltip">
+            <img src="assets/funds.svg" alt="Funds">
+            <span class="link hide">Materia</span>
+            <span class="tooltip__content">Materia</span>
+          </a>
+        </li>
+        <li>
+          <a href="#funds" title="Funds" class="tooltip">
+            <img src="assets/funds.svg" alt="Funds">
+            <span class="link hide">Profesor</span>
+            <span class="tooltip__content">Profesor</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+    <div class="sidebar-bottom">
+      <div class="sidebar-links">
+        <ul>
+          <li>
+            <a href="#help" title="Help" class="tooltip">
+              <img src="assets/help.svg" alt="Help">
+              <span class="link hide">Ayuda</span>
+              <span class="tooltip__content">Ayuda</span>
+            </a>
+          </li>
+          <li>
+            <a href="#settings" title="Settings" class="tooltip">
+              <img src="assets/settings.svg" alt="Settings">
+              <span class="link hide">Configuración</span>
+              <span class="tooltip__content">Configuración</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="sidebar__profile">
+        <div class="avatar__wrapper">
+          <img class="avatar" src="assets/logo_tecnm.png" alt="Profile">
+          <div class="online__status"></div>
+        </div>
+        <div class="avatar__name hide">
+          <div class="user-name">Uriel Cruz</div>
+          <div class="email">correo@gmail.com</div>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <!-- Contenedor principal -->
+  <main class="content" class="top-container">
+    <h1>Formulario de Edificios</h1>
+    <!-- Formulario añadido -->
+    <div class="form-container">
+        <div class="form-group">
+            <label for="nombre">Nombre</label>
+            <input type="text" id="nombre" name="nombre">
+        </div>
+            <div class="options">
+            <button class="options-btn">Opciones</button>
+            <div class="options-dropdown">
+                <button>Eliminar</button>
+                <button>Modificar</button>
+                <button class="new-btn" onclick="showPopup()">Nuevo</button>
+            </div>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Niveles</th>
+                    <th>#Sanitarios</th>
+                    <th>#Aulas</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td colspan="4"></td></tr>
+                <tr><td colspan="4"></td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="popup" id="popupForm">
+        <div class="popup-content">
+            <div class="form-group">
+                <label for="popup-nombre">Nombre</label>
+                <input type="text" id="popup-nombre" name="popup-nombre">
+            </div>
+            <div class="form-group">
+                <label for="popup-niveles">Niveles</label>
+                <input type="text" id="popup-niveles" name="popup-niveles">
+            </div>
+            <div class="form-group">
+                <label for="popup-sanitarios">Sanitarios</label>
+                <input type="text" id="popup-sanitarios" name="popup-sanitarios">
+            </div>
+             <div class="form-group">
+                <label for="popup-sanitarios">Aulas</label>
+                <input type="text" id="popup-sanitarios" name="popup-sanitarios">
+            </div>
+            <div class="button-group">
+                <button onclick="hidePopup()">Cancelar</button>
+                <button>Aceptar</button>
+            </div>
+        </div>
+    </div>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
+
